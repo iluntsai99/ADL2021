@@ -7,7 +7,7 @@ from typing import Dict
 import torch
 
 from dataset import slotDataset
-from model import slotClassifier
+from bestModel import slotClassifier
 from utils import Vocab
 import utils
 from tqdm import tqdm
@@ -85,7 +85,7 @@ def parse_args() -> Namespace:
         type=Path,
         help="Path to model checkpoint.",
         # required=True
-        default="./ckpt/slot/best.pt",
+        default="./ckpt/slot/77801.pt",
     )
     parser.add_argument("--pred_file", type=Path, default="pred.slot.csv")
 

@@ -7,7 +7,7 @@ from typing import Dict
 import torch
 
 from dataset import SeqClsDataset
-from model import SeqClassifier
+from bestModel import SeqClassifier
 from utils import Vocab
 import utils
 
@@ -86,7 +86,7 @@ def parse_args() -> Namespace:
         type=Path,
         help="Path to model checkpoint.",
         # required=True
-        default="./ckpt/intent/best.pt",
+        default="./ckpt/intent/91377.pt",
     )
     parser.add_argument("--pred_file", type=Path, default="pred.intent.csv")
 
