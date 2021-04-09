@@ -85,7 +85,7 @@ def parse_args() -> Namespace:
         type=Path,
         help="Path to model checkpoint.",
         # required=True
-        default="./ckpt/slot/77801.pt",
+        default="./ckpt/slot/best.pt",
     )
     parser.add_argument("--pred_file", type=Path, default="pred.slot.csv")
 
