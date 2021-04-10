@@ -7,8 +7,8 @@ from typing import Dict
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torchCRF import CRF
 from torch.utils.data import ConcatDataset, Subset
-from torchcrf import CRF
 from tqdm import tqdm
 from tqdm import trange
 
@@ -24,7 +24,7 @@ TRAIN = "train"
 DEV = "eval"
 TEST = "test"
 SPLITS = [TRAIN, DEV, TEST]
-batch_size = 8
+batch_size = 16
 lr = 1e-3
 hidden_size = 512
 num_layers = 2
@@ -60,8 +60,8 @@ def main(args):
     # TODO: init optimizer
     optimizer = optim.Adam(model.parameters(), lr=lr)
     schedular = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=20)
-    # criterion = nn.CrossEntropyLoss()
-    criterion = CRF(len(tag2idx), batch_first=True)
+    criterion = nn.CrossEntropyLoss()
+    # criterion = CRF(len(tag2idx), batch_first=True).to(device)
     best_acc = 0
 
     early_stop = 20
@@ -87,17 +87,9 @@ def main(args):
             # print(Y_batch.shape)
             # print(outputs.reshape(-1, len(tag2idx)).shape)
             # print(Y_batch.reshape(-1).shape)
-            # loss = 0
-            # print(outputs.shape)
-            # for i in range(outputs.shape[0]):
-                # print(outputs[i][:text_lens[i]])
-                # print(outputs[i][:text_lens[i]].shape)
-                # print(Y_batch[i][:text_lens[i]].shape)
-                # loss += criterion(outputs[i][:text_lens[i]], Y_batch[i][:text_lens[i]])
-            # loss = criterion(outputs.reshape(-1, len(tag2idx)), Y_batch.reshape(-1)) / text_lens.sum()
-            mask = torch.arange(X_batch.shape[1]).repeat(X_batch.shape[0], 1).to(device) < text_lens.unsqueeze(1)
-            print(outputs.shape, Y_batch.shape, mask.shape)
-            loss = -criterion(outputs, Y_batch, mask=mask, reduction="sum") / text_lens.sum()
+            loss = criterion(outputs.reshape(-1, len(tag2idx)), Y_batch.reshape(-1)) / text_lens.sum()
+            # mask = torch.arange(X_batch.shape[1]).repeat(X_batch.shape[0], 1).to(device) < text_lens.unsqueeze(1)
+            # loss = -criterion(outputs, Y_batch, mask=mask, reduction="mean") / text_lens.sum()
             loss.backward() # 算 loss 的 gradient
             optimizer.step()
             correct = model.evaluation(outputs.argmax(dim=-1), text_lens, Y_batch) 
@@ -115,10 +107,9 @@ def main(args):
                 text_lens = text_lens.to(device)
 
                 outputs = model(X_batch)
-                # loss = 0
-                # for i in range(outputs.shape[0]):
-                #     loss += criterion(outputs[i][:text_lens[i]], Y_batch[i][:text_lens[i]])
                 loss = criterion(outputs.reshape(-1, len(tag2idx)), Y_batch.reshape(-1)) / text_lens.sum()
+                # mask = torch.arange(X_batch.shape[1]).repeat(X_batch.shape[0], 1).to(device) < text_lens.unsqueeze(1)
+                # loss = -criterion(outputs, Y_batch, mask=mask, reduction="sum") / text_lens.sum()
                 correct = model.evaluation(outputs.argmax(dim=-1), text_lens, Y_batch) 
                 total_acc += correct
                 total_loss += loss.item() * Y_batch.shape[0]

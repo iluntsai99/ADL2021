@@ -88,7 +88,7 @@ def parse_args() -> Namespace:
         # required=True
         default="./ckpt/intent/91377.pt",
     )
-    parser.add_argument("--pred_file", type=Path, default="pred.intent.csv")
+    parser.add_argument("--pred_file", type=Path, default="compareInt.csv")
 
     # data
     parser.add_argument("--max_len", type=int, default=128)

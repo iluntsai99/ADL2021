@@ -12,7 +12,7 @@ from tqdm import tqdm
 from tqdm import trange
 
 from dataset import SeqClsDataset
-from model import SeqClassifier
+from bestModel import SeqClassifier
 from utils import Vocab
 import utils
 import numpy as np
