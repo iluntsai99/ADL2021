@@ -104,7 +104,7 @@ def main(args):
     # TODO: init model and move model to target device(cpu / gpu)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = SeqClassifier(embeddings, hidden_size, num_layers, dropout, bidirectional, len(intent2idx)).to(device)
-
+    print(model)
     # TODO: init optimizer
     optimizer = optim.Adam(model.parameters(), lr=lr)
     schedular = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=20)

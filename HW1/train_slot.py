@@ -44,10 +44,16 @@ def main(args):
         split: slotDataset(split_data, vocab, tag2idx, args.max_len)
         for split, split_data in data.items()
     }
+    collate_fn=datasets[TRAIN].collate_fn
+
+    addTrain_size = int(0.8 * len(datasets[DEV]))
+    valid_size = len(datasets[DEV]) - addTrain_size
+    addTrain_dataset, datasets[DEV] = torch.utils.data.random_split(datasets[DEV], [addTrain_size, valid_size])
+    datasets[TRAIN] = ConcatDataset([datasets[TRAIN], addTrain_dataset])
     
     # TODO: crecate DataLoader for train / dev datasets
-    train_loader = torch.utils.data.DataLoader(dataset=datasets[TRAIN], batch_size=batch_size, shuffle=True, num_workers=8, collate_fn=datasets[TRAIN].collate_fn)
-    dev_loader = torch.utils.data.DataLoader(dataset=datasets[DEV], batch_size=batch_size, shuffle=False, num_workers=8, collate_fn=datasets[DEV].collate_fn)
+    train_loader = torch.utils.data.DataLoader(dataset=datasets[TRAIN], batch_size=batch_size, shuffle=True, num_workers=8, collate_fn=collate_fn)
+    dev_loader = torch.utils.data.DataLoader(dataset=datasets[DEV], batch_size=batch_size, shuffle=False, num_workers=8, collate_fn=collate_fn)
     # print(datasets[TRAIN][0:10])
     # print(datasets[TRAIN][0]["tokens"])
     # print(vocab.encode(datasets[TRAIN][0]["tokens"]))
@@ -117,7 +123,7 @@ def main(args):
         if (total_acc / dev_size) >= best_acc:
             print("saving model...with {} data and acc: {}".format(train_size, (total_acc / dev_size)))
             best_acc = total_acc / dev_size
-            torch.save(model.state_dict(), args.ckpt_dir / f"best.pt")
+            torch.save(model.state_dict(), args.ckpt_dir / f"plz.pt")
             early_stop = 0
         else:
             early_stop += 1
