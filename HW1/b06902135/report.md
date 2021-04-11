@@ -1,16 +1,18 @@
 # ADL HW1 @NTU, 2021 spring
 
-B06902135 資工三 蔡宜倫
+B06902135 資工四 蔡宜倫
 
 ## 1. Data processing (2%)
 
 + **Describe how do you use the data for intent_cls.sh, slot_tag.sh:** 
     + **How do you tokenize the data.**
 
-        我將intent和slot的train.json和eval.json讀入，並特別處理屬於['intent']和['text']的部分，得到一個table是intent2idx，用於將150種intent label好，另外text則建一個Vocab的class（在utils.py），一樣也是將每一個text裡出現過的vocabulary標號存起來，用於之後的查表，也就是在處理intent和slot的tasks時，從token轉成id，並且從2開始，0為`PAD`1為`UNK`，用於處理padding和若testing時查表不存在的情況。考慮到效率的問題我的想法是只存10000個比較常見的vocabulary，因為較少見的字在slot tagging task比較有機會被分到O，而在intent classification通常intent可以由較常見的字得到好的representation，但後來發現在兩個task的data中都沒有到10000個字，所以這個考慮是多餘的。
+        我將intent和slot的train.json和eval.json讀入，並特別處理屬於['intent']、['tag']和['text']的部分，得到兩個table：intent2idx和tag2idx，用於將150種intent label好和9種tag的label對應。
+
+    + text則建一個Vocab的class（在utils.py），一樣也是將每一個text裡出現過的vocabulary標號存起來，用於之後的查表，也就是在處理intent和slot的tasks時，從token轉成id，並且從2開始，0為`PAD`1為`UNK`，用於處理padding和若testing時查表不存在的情況。考慮到效率的問題我的想法是只存10000個比較常見的vocabulary，因為較少見的字在slot tagging task比較有機會被分到O，而在intent classification通常intent可以由較常見的字得到好的representation，但後來發現在兩個task的data中都沒有到10000個字，所以這個考慮是多餘的。
 
     + **The pre-trained embedding you used.**
-
+    
         我使用GloVe作為word Embedding(Glove.840B.300d)，這是一種利用co-occurrence probability的ratio得到word embedding的方法。
 
 ## 2. Describe your intent classification model. (2%)
@@ -96,17 +98,17 @@ B06902135 資工三 蔡宜倫
 + **Please use [seqeval](https://github.com/chakki-works/seqeval) to evaluate your model in Q3 on validation set and report .** ``*classification_report(schema=IOB2, mode=’strict’)*``
 
     + ```
-                      precision    recall  f1-score   support
+                      			precision    recall  f1-score   support
+            
+                          date       0.88      0.94      0.91       206
+              first_name       0.82      0.97      0.89       102
+               last_name       1.00      0.82      0.90        78
+                  people       0.91      0.89      0.90       238
+                    time       0.94      0.97      0.95       218
         
-                date       0.88      0.94      0.91       206
-          first_name       0.82      0.97      0.89       102
-           last_name       1.00      0.82      0.90        78
-              people       0.91      0.89      0.90       238
-                time       0.94      0.97      0.95       218
-        
-           micro avg       0.90      0.93      0.92       842
-           macro avg       0.91      0.92      0.91       842
-        weighted avg       0.91      0.93      0.92       842
+               micro avg       0.90      0.93      0.92       842
+               macro avg       0.91      0.92      0.91       842
+          weighted avg       0.91      0.93      0.92       842
         ```
 
 + **Explain the differences between the evaluation method in [seqeval](https://github.com/chakki-works/seqeval), token accuracy, and joint accuracy.**
