@@ -6,5 +6,5 @@ if [ ! -f glove.840B.300d.txt ]; then
 fi
 mkdir -p ./ckpt/intent
 mkdir -p ./ckpt/slot
-wget https://www.dropbox.com/s/vpdc971afyrdfbs/91377.pt?dl=1 -O ./ckpt/intent/91377.pt
-wget https://www.dropbox.com/s/idgn6uv2fjmogpu/78713.pt?dl=1 -O ./ckpt/slot/78713.pt
+wget https://www.dropbox.com/s/z5plt7psirkir2e/91822.pt?dl=0 -O ./ckpt/intent/intentModel.pt
+wget https://www.dropbox.com/s/silpwjeaz1fspra/82252.pt?dl=1 -O ./ckpt/slot/slotModel.pt

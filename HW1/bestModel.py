@@ -19,10 +19,11 @@ class SeqClassifier(torch.nn.Module):
         self.embed = Embedding.from_pretrained(embeddings, freeze=True)
         
         # TODO: model architecture
-        self.gru = nn.GRU(embeddings.size(1), hidden_size, num_layers, batch_first=True, bidirectional=bidirectional)
+        self.gru = nn.GRU(embeddings.size(1), hidden_size, num_layers, batch_first=True, bidirectional=bidirectional, dropout=dropout)
         self.classifier = nn.Sequential(nn.Dropout(dropout),
-                                         nn.Linear(hidden_size * 4, num_class),
-                                         nn.Sigmoid())
+                                         nn.Linear(hidden_size * 4, hidden_size * 2),
+                                        nn.Dropout(dropout),
+                                         nn.Linear(hidden_size * 2, num_class), )
         
 
     @property
@@ -55,12 +56,9 @@ class slotClassifier(torch.nn.Module):
         self.embed = Embedding.from_pretrained(embeddings, freeze=True)
         
         # TODO: model architecture
-        self.gru = nn.GRU(embeddings.size(1), hidden_size, num_layers, batch_first=True, bidirectional=bidirectional)
-        self.classifier = nn.Sequential(nn.Dropout(dropout),
-                                         nn.Linear(hidden_size * 2, hidden_size * 2),
-                                         nn.Sigmoid(),
-                                         nn.Dropout(dropout),
-                                         nn.Linear(hidden_size * 2, num_class),)
+        self.gru = nn.GRU(embeddings.size(1), hidden_size, num_layers, batch_first=True, bidirectional=bidirectional, dropout=dropout)                              
+        self.classifier = nn.Sequential( nn.Dropout(dropout),
+                                         nn.Linear(hidden_size * 2, num_class))
 
         self.pack = lambda inputs, input_lens: pack_padded_sequence(inputs, input_lens, \
                                                             batch_first=True, enforce_sorted=False)
@@ -88,8 +86,9 @@ class slotClassifier(torch.nn.Module):
     def compute(self, batch, text_lens):
         inputs = self.embed(batch)
         # print("compute", inputs.shape)
-        packed_x, _ = self.gru(self.pack(inputs, text_lens.cpu()), None)  # x 的 dimension (batch, seq_len, hidden_size)
-        x, _ = self.unpack(packed_x)
+        # packed_x, _ = self.gru(self.pack(inputs, text_lens.cpu()), None)  # x 的 dimension (batch, seq_len, hidden_size)
+        x, _ = self.gru(inputs, None)  # x 的 dimension (batch, seq_len, hidden_size)
+        # x, _ = self.unpack(packed_x)
         # print("x ", x.shape)
         return self.classifier(x)
     
