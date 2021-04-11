@@ -16,12 +16,18 @@ bash preprocess.sh
 
 ## Intent detection
 ```shell
-python train_intent.py --data_dir <data_path>
+# training
+python train_intent.py --data_dir <data_dir>
+# inference
+bash ./slot_tag.sh <test_file> <pred_file>
 ```
 
 ## Slot classification
 ```shell
-python train_slot.py --data_dir <data_path>
+# training
+python train_slot.py --data_dir <data_dir>
+# inference
+bash ./slot_tag.sh <test_file> <pred_file>
 ```
 
 **Note: if you want to add CRF layer, you need to comment the `nn.CrossEntropy` method and uncomment the CRF implementation.**
