@@ -25,23 +25,26 @@ B06902135 資工四 蔡宜倫
           (gru): GRU(300, 512, num_layers=2, batch_first=True, bidirectional=True)
           (classifier): Sequential(
             (0): Dropout(p=0.5, inplace=False)
-            (1): Linear(in_features=2048, out_features=150, bias=True)
-            (2): Sigmoid()
+            (1): Linear(in_features=2048, out_features=1024, bias=True)
+            (2): Dropout(p=0.5, inplace=False)
+            (3): Linear(in_features=1024, out_features=150, bias=True)
           )
         )
-        ```
-
+    ```
+        
     + $e_i = Embedding(s_i)$ 代表將每一個token代表的word餵進GloVe的embedding得到$e_i$。
 
-    + $o_t, h_t = GRU(e_{t}, h_{t-1}, o_{t-1})$ 代表將$e_{t}$餵進去得到$o_t$ output features，$h$代表hidden layer。
+    + $h_t = GRU(e_{t}, h_{t-1})$ 代表將$e_{t}$和前一個output $h_{t-1}$餵進去得到$h_t$代表這一neuron的output。
 
-    + 在GRU之後，Linear layer是由Dropout 50%、一層全連接層和Sigmoid組成，詳細的input dimension和output dimension寫在上表。
+    + 在GRU之後，Linear layer是由Dropout 50%、一層全連接層疊兩層組成，詳細的input dimension和output dimension寫在上表。
+
+    + 我原本一直在比較各種activation function的performance，後來發現拿掉最好。
 
     + $result=Classifier(o)$，而result為一個$[batchsize \times 150]$的矩陣，判斷每一個sequence屬於哪一個intent。
 
 + **Performance of your model.(public score on kaggle)**
 
-    + 我的best public score是`0.91377`。
+    + 我的best private score是`0.92133`。
 
 + **The loss function you used.**
 
@@ -64,24 +67,25 @@ B06902135 資工四 蔡宜倫
           (classifier): Sequential(
             (0): Dropout(p=0.5, inplace=False)
             (1): Linear(in_features=1024, out_features=1024, bias=True)
-            (2): Sigmoid()
-            (3): Dropout(p=0.5, inplace=False)
-            (4): Linear(in_features=1024, out_features=9, bias=True)
+            (2): Dropout(p=0.5, inplace=False)
+            (3): Linear(in_features=1024, out_features=9, bias=True)
           )
         )
         ```
-
+        
     + $e_i = Embedding(s_i)$ 代表將每一個token代表的word餵進GloVe的embedding得到$e_i$。
 
-    + $o_t, h_t = GRU(e_{t}, h_{t-1}, o_{t-1})$ 代表將$e_{t}$餵進去得到$o_t$ output features，$h$代表hidden layer。
+    + $h_t = GRU(e_{t}, h_{t-1})$ 代表將$e_{t}$和前一個output $h_{t-1}$餵進去得到$h_t$代表這一neuron的output。
 
-    + 在GRU之後，Linear layer是由Dropout 50%、一層全連接層和Sigmoid，再接到Dropout 50%並由fully connected layer輸出，詳細的input dimension和output dimension寫在上表。
+    + 在GRU之後，Linear layer是由Dropout 50%、然後fully connected layer輸出，詳細的input dimension和output dimension寫在上表。
+
+    + 我原本一直在比較各種activation function的performance，後來發現拿掉最好。
 
     + $result=Classifier(o)$，而result為一個$[batchsize \times seqLen\times 9]$的矩陣，判斷每一個sequence的token屬於哪一個slot。
 
 + **Performance of your model.(public score on kaggle)**
 
-    + 我的best public score是`0.78552`。
+    + 我的best private score是`0.81993`。
 
 + **The loss function you used.**
 
@@ -99,13 +103,13 @@ B06902135 資工四 蔡宜倫
 
     + ```
                       			precision    recall  f1-score   support
-            
+                    
                           date       0.88      0.94      0.91       206
               first_name       0.82      0.97      0.89       102
                last_name       1.00      0.82      0.90        78
                   people       0.91      0.89      0.90       238
                     time       0.94      0.97      0.95       218
-        
+            
                micro avg       0.90      0.93      0.92       842
                macro avg       0.91      0.92      0.91       842
           weighted avg       0.91      0.93      0.92       842
