@@ -215,9 +215,53 @@ B06902135 資工四 蔡宜倫
 ## 4. Pretrained vs Not Pretrained (2%)
 
 + **Train a transformer model from scratch (without pretrained weights) on the dataset**
+
 + **Describe**
+
     + **The configuration of the model and how do you train this model**
+
+        + 總共需要兩種model的架構，一種是BertForMultipleChoice，另一種是BertForQuestionAnswering。
+
+        + 我採用了同樣的model configuration去train兩個task：
+
+            ```python
+            config = BertConfig(
+                vocab_size = 30522,
+                hidden_size = 552,
+                num_fidden_layers = 6,
+                num_attention_heads = 6,
+                intermediate_size = 1024
+            )
+            ```
+
+        + 其餘的hyper-parameters設定和之前一樣，如下所示：
+
+            + Context Selection:
+                + Optimization Algorithm: `transformers.AdamW`
+                + Scheduler: `transformers.optimization.get_linear_schedule_with_warmup`
+                + Learning Rate: `3e-5`
+                + Batch Size: `1`
+                + Epoch: `2`
+                + Gradient Accumulation Step: `40`
+            + Question Answering:
+                + Optimization Algorithm: `transformers.AdamW`
+                + Scheduler: `transformers.optimization.get_linear_schedule_with_warmup`
+                + Learning Rate: `3e-5`
+                + Batch Size: `8`
+                + Epoch: `2`
+                + Gradient Accumulation Step: `2`
+
     + **the performance of this model v.s. BERT**
+
+        + 在Context Selection的task上，轉確率為$40\%$，由於是7選1，其實這樣的表現只比隨機亂猜好一點。
+
+        + 在Question Answering上，有$2\%$的命中率，會表現這麼差的原因是因為訓練資料太少，而原本使用pre-trained model有很多contextualized 的knowledge，現在沒有後就造成巨幅退步。
+
+            ```
+            {"count": 3526, "em": 0.012548423842356, "f1": 0.0337884272748309}
+            ```
+
+        + 以上是overall的Performance，可以看到整體退步了非常多。
 
 ## 5. Compare with different configurations (1% + Bonus 1%)
 
