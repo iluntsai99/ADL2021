@@ -116,12 +116,12 @@ B06902135 資工四 蔡宜倫
 
         + Context Selection accuracy on `public.json`: $95.8\%$
 
-        + Question Answer EM on `public.json`: $84.3\%$
+        + Question Answer EM on `public.json`: $86.0\%$
 
         + **Joint**:
 
             ```json
-            {"count": 3526, "em": 0.819058423142371, "f1": 0.8733224272153176}
+            {'count': 3526, 'em': 0.840045377197958, 'f1': 0.8956364922520763}
             ```
 
     + **the loss function you used.**
@@ -253,9 +253,9 @@ B06902135 資工四 蔡宜倫
 
     + **the performance of this model v.s. BERT**
 
-        + 在Context Selection的task上，轉確率為$40\%$，由於是7選1，其實這樣的表現只比隨機亂猜好一點。
+        + 在Context Selection的task上，準確率為$40\%$，由於是7選1，其實這樣的表現只比隨機亂猜好一點。
 
-        + 在Question Answering上，有$2\%$的命中率，會表現這麼差的原因是因為訓練資料太少，而原本使用pre-trained model有很多contextualized 的knowledge，現在沒有後就造成巨幅退步。
+        + 在Question Answering上，有$2\%$的命中率，會表現這麼差的原因可能是因為訓練資料太少，而原本使用pre-trained model有很多contextualized 的knowledge，現在沒有後就造成巨幅退步。
 
             ```
             {"count": 3526, "em": 0.012548423842356, "f1": 0.0337884272748309}
