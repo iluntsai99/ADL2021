@@ -1,4 +1,4 @@
-# README for Homework 2 ADL NTU 109 Spring
+# README for Homework 3 ADL NTU 109 Spring
 
 ## Environment
 
@@ -15,28 +15,43 @@ pip install accelerate
 bash download.sh
 ```
 
-## CS and QA
+## Train
 ```shell
 # training
-python train_CS.py --data_dir <data_dir>
-python train_QA.py --data_dir <data_dir>
+python train.py --data_dir <data_dir>
 # inference
-bash run.sh <context_path> <data_path> <prediction_path>
+bash run.sh <data_path> <prediction_path>
 ```
 
 ## Testing steps for myself
 
 `bash download.sh`
 
-`bash run.sh ../HW2/hw2_dataset/dataset/context.json ../HW2/hw2_dataset/dataset/public.json pred_public.json`
+`unzip data.zip`
 
-`bash run.sh ../HW2/hw2_dataset/dataset/context.json ../HW2/hw2_dataset/dataset/private.json pred_private.json`
+`bash ./run.sh data/public.jsonl ./public_result.jsonl`
 
-`python eval.py ../HW2/hw2_dataset/dataset/public.json pred_public.json score.json  `
+`python ./ADL21-HW3/eval.py -r ./public_result.josnl -s ../data/public.jsonl`
 
 **Public score should be:**
 
 ```json
-{'count': 3526, 'em': 0.840045377197958, 'f1': 0.8956364922520763}
+{
+    "rouge-1": {
+      "f": 0.24075470957606235,
+      "p": 0.25188147481106077,
+      "r": 0.2489811697983504
+    },
+    "rouge-2": {
+      "f": 0.09356939220508297,
+      "p": 0.09877845706232852,
+      "r": 0.09682421744837488
+    },
+    "rouge-l": {
+      "f": 0.22007317044713115,
+      "p": 0.23617723049045597,
+      "r": 0.2216698935716019
+    }
+  }
 ```
 

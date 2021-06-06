@@ -16,4 +16,4 @@ class myDataset(Dataset):
         if self.split == "train" or self.split == "public":
             return torch.tensor(self.tokenized_title["input_ids"][index]), torch.tensor(self.tokenized_maintext["input_ids"][index])
         else:
-            return torch.tensor(self.tokenized_title["input_ids"][index]), torch.tensor(self.tokenized_maintext["input_ids"][index]), self.data[index]["id"]
+            return torch.tensor(self.tokenized_maintext["input_ids"][index]), self.data[index]["id"]

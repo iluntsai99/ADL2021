@@ -31,20 +31,19 @@ def main(args):
     model = MT5ForConditionalGeneration.from_pretrained(args.ckpt_dir).to(device)
     tokenizer = T5TokenizerFast.from_pretrained("google/mt5-small")
     with tokenizer.as_target_tokenizer():
-        test_title_tokenized = tokenizer([test_data["title"] for test_data in data[TEST]], return_tensors="pt", truncation=True, max_length=args.max_title_len, padding=True)
-    test_maintext_tokenized = tokenizer([test_data["maintext"] for test_data in data[TEST]], return_tensors="pt", truncation=True, max_length=args.max_maintext_len, padding=True)
-    test_set = myDataset("TEST", data[TEST], test_title_tokenized, test_maintext_tokenized)
+        test_maintext_tokenized = tokenizer([test_data["maintext"] for test_data in data[TEST]], return_tensors="pt", truncation=True, max_length=args.max_maintext_len, padding=True)
+    test_set = myDataset("TEST", data[TEST], None, test_maintext_tokenized)
     test_loader = DataLoader(test_set, batch_size=args.batch_size, shuffle=False)
 
     model.eval()
     results = list()
     with torch.no_grad():
         for i, datas in enumerate(tqdm(test_loader)):
-            outputs = model.generate(input_ids=datas[1].to(device), max_length=args.max_title_len, num_beams=5, repetition_penalty=2.5, do_sample=True, use_cache=True)
+            outputs = model.generate(input_ids=datas[0].to(device), max_length=args.max_title_len, num_beams=10, repetition_penalty=2.5, do_sample=True, use_cache=True)
             for j in range(outputs.shape[0]):
                 summary = dict()
                 summary["title"] = tokenizer.batch_decode(outputs, skip_special_tokens=True)[j]
-                summary["id"] = datas[2][j]
+                summary["id"] = datas[1][j]
                 # print(summary)
                 results.append(summary)
 
